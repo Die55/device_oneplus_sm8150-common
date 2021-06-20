@@ -21,4 +21,10 @@
 
     <!-- Whether to show min/max refresh rate in display settings -->
     <bool name="config_show_refresh_rate_controls">true</bool>
+    
+    <!-- FOD recognizing animation -->
+    <bool name="config_showFODAnimationSettings">true</bool>
+
+    <!-- Screen off FOD -->
+    <bool name="config_supportScreenOffFod">true</bool>
 </resources>
