@@ -229,6 +229,9 @@ PRODUCT_PACKAGES += \
 # DRM
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.3-service.clearkey
+    
+# Enable blurs
+TARGET_USES_BLUR := true
 
 # fastbootd
 PRODUCT_PACKAGES += \

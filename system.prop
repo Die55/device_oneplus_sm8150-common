@@ -11,6 +11,13 @@ vendor.bluetooth.soc=cherokee
 persist.vendor.bt.a2dp.aac_whitelist=false
 ro.bluetooth.library_name=libbluetooth_qti.so
 
+# Blur 
+ro.surface_flinger.supports_background_blur=1
+ro.sf.blurs_are_expensive=1
+
+# Charger
+ro.charger.enable_suspend=true
+
 # Camera
 persist.camera.assert.panic=true
 persist.camera.privapp.list=com.oneplus.factorymode,com.oneplus.camera,com.oem.autotest,com.oneplus.healthcheck
