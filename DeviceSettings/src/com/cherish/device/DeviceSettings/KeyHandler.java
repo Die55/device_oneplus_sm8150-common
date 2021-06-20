@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.derp.device.DeviceSettings;
+package com.cherish.device.DeviceSettings;
 
 import android.Manifest;
 import android.app.NotificationManager;
@@ -50,7 +50,7 @@ import android.view.KeyEvent;
 import com.android.internal.os.DeviceKeyHandler;
 import com.android.internal.util.ArrayUtils;
 
-import com.derp.device.DeviceSettings.Constants;
+import com.cherish.device.DeviceSettings.Constants;
 
 import vendor.oneplus.camera.CameraHIDL.V1_0.IOnePlusCameraProvider;
 

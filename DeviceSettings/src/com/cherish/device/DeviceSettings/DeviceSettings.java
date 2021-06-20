@@ -15,7 +15,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package com.derp.device.DeviceSettings;
+package com.cherish.device.DeviceSettings;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -45,8 +45,8 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 
-import com.android.internal.util.derp.FileUtils;
-import com.derp.device.DeviceSettings.Constants;
+import com.android.internal.util.cherish.FileUtils;
+import com.cherish.device.DeviceSettings.Constants;
 
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
