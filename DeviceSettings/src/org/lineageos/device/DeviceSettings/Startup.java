@@ -25,8 +25,13 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import androidx.preference.PreferenceManager;
 
+import org.lineageos.device.DeviceSettings.TouchscreenGestureSettings;
+
 public class Startup extends BroadcastReceiver {
 
+    private static final String TAG = "BootReceiver";
+    private static final String ONE_TIME_TUNABLE_RESTORE = "hardware_tunable_restored";
+    
     private boolean mHBM = false;
 
     @Override
@@ -34,6 +39,45 @@ public class Startup extends BroadcastReceiver {
 
         VibratorStrengthPreference.restore(context);
 
+        boolean enabled = false;
+        TouchscreenGestureSettings.MainSettingsFragment.restoreTouchscreenGestureStates(context);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_SRGB_SWITCH, false);
+
+        if (enabled) {
+        mHBM = false;
+        restore(SRGBModeSwitch.getFile(), enabled);
+		}
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_HBM_SWITCH, false);
+        if (enabled) {
+        mHBM = true;
+        restore(HBMModeSwitch.getFile(), enabled);
+        }
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_DC_SWITCH, false);
+        if (enabled) {
+        mHBM = false;
+        restore(DCModeSwitch.getFile(), enabled);
+        }
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_DCI_SWITCH, false);
+        if (enabled) {
+        mHBM = false;
+        restore(DCIModeSwitch.getFile(), enabled);
+        }
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_NATURAL_SWITCH, false);
+        if (enabled) {
+        mHBM = false;
+        restore(NaturalModeSwitch.getFile(), enabled);
+        }
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_VIVID_SWITCH, false);
+        if (enabled) {
+        mHBM = false;
+        restore(VividModeSwitch.getFile(), enabled);
+        }
+        enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_WIDECOLOR_SWITCH, false);
+        if (enabled) {
+        mHBM = false;
+        restore(WideColorModeSwitch.getFile(), enabled);
+        }
         Utils.enableService(context);
     }
 
@@ -51,5 +95,14 @@ public class Startup extends BroadcastReceiver {
             return;
         }
         Utils.writeValue(file, value);
+    }
+        private boolean hasRestoredTunable(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean(ONE_TIME_TUNABLE_RESTORE, false);
+    }
+
+    private void setRestoredTunable(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean(ONE_TIME_TUNABLE_RESTORE, true).apply();
     }
 }

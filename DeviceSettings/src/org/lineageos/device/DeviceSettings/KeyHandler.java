@@ -65,7 +65,7 @@ public class KeyHandler implements DeviceKeyHandler {
     private static String FPNAV_ENABLED_PROP = "sys.fpnav.enabled";
     private static String NIGHT_MODE_ENABLED_PROP = "sys.night_mode.enabled";
     private static String NIGHT_MODE_COLOR_TEMPERATURE_PROP = "sys.night_mode.color_temperature";
-
+ 
     private static final SparseIntArray sSupportedSliderZenModes = new SparseIntArray();
     private static final SparseIntArray sSupportedSliderRingModes = new SparseIntArray();
     private static final SparseIntArray sSupportedSliderHaptics = new SparseIntArray();
@@ -82,15 +82,15 @@ public class KeyHandler implements DeviceKeyHandler {
         sSupportedSliderRingModes.put(Constants.KEY_VALUE_VIBRATE, AudioManager.RINGER_MODE_VIBRATE);
         sSupportedSliderRingModes.put(Constants.KEY_VALUE_NORMAL, AudioManager.RINGER_MODE_NORMAL);
         
-        sSupportedSliderHaptics.put(Constants.KEY_VALUE_TOTAL_SILENCE, VibrationEffect.EFFECT_HEAVY_CLICK);
+        sSupportedSliderHaptics.put(Constants.KEY_VALUE_TOTAL_SILENCE, VibrationEffect.EFFECT_THUD);
         sSupportedSliderHaptics.put(Constants.KEY_VALUE_SILENT, VibrationEffect.EFFECT_DOUBLE_CLICK);
-        sSupportedSliderHaptics.put(Constants.KEY_VALUE_PRIORTY_ONLY, VibrationEffect.EFFECT_HEAVY_CLICK);
-        sSupportedSliderHaptics.put(Constants.KEY_VALUE_VIBRATE, VibrationEffect.EFFECT_TICK);
+        sSupportedSliderHaptics.put(Constants.KEY_VALUE_PRIORTY_ONLY, VibrationEffect.EFFECT_THUD);
+        sSupportedSliderHaptics.put(Constants.KEY_VALUE_VIBRATE, VibrationEffect.EFFECT_HEAVY_CLICK);
         sSupportedSliderHaptics.put(Constants.KEY_VALUE_NORMAL, -1);
     }
 
     public static final String CLIENT_PACKAGE_NAME = "com.oneplus.camera";
-    public static final String CLIENT_PACKAGE_PATH = "/data/misc/lineage/client_package_name";
+    public static final String CLIENT_PACKAGE_PATH = "/data/misc/xtended/client_package_name";
 
     private final Context mContext;
     private final PowerManager mPowerManager;
@@ -124,7 +124,7 @@ public class KeyHandler implements DeviceKeyHandler {
     };
 
     public KeyHandler(Context context) {
-        mContext = context;
+        mContext = context; 
         mHandler = new Handler(Looper.getMainLooper());
         mDispOn = true;
         mPowerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
@@ -212,7 +212,7 @@ public class KeyHandler implements DeviceKeyHandler {
     public KeyEvent handleKeyEvent(KeyEvent event) {
         int scanCode = event.getScanCode();
         String keyCode = Constants.sKeyMap.get(scanCode);
-
+    
         int keyCodeValue = 0;
         try {
             keyCodeValue = Constants.getPreferenceInt(mContext, keyCode);
@@ -235,17 +235,41 @@ public class KeyHandler implements DeviceKeyHandler {
             doHapticFeedback(sSupportedSliderHaptics.get(keyCodeValue));
         mNotificationManager.setZenMode(sSupportedSliderZenModes.get(keyCodeValue), null, TAG);
         int position = scanCode == 601 ? 2 : scanCode == 602 ? 1 : 0;
-        sendUpdateBroadcast(position);
         mPrevKeyCode = keyCodeValue;
+        int positionValue = 0;
+        int key = sSupportedSliderRingModes.keyAt(
+                sSupportedSliderRingModes.indexOfKey(keyCodeValue));
+        switch (key) {
+            case Constants.KEY_VALUE_TOTAL_SILENCE: // DND - no int'
+                positionValue = Constants.MODE_TOTAL_SILENCE;
+                break;
+            case Constants.KEY_VALUE_SILENT: // Ringer silent
+                positionValue = Constants.MODE_SILENT;
+                break;
+            case Constants.KEY_VALUE_PRIORTY_ONLY: // DND - priority
+                positionValue = Constants.MODE_PRIORITY_ONLY;
+                break;
+            case Constants.KEY_VALUE_VIBRATE: // Ringer vibrate
+                positionValue = Constants.MODE_VIBRATE;
+                break;
+            default:
+            case Constants.KEY_VALUE_NORMAL: // Ringer normal DND off
+                positionValue = Constants.MODE_RING;
+                break;
+        }
+
+        sendUpdateBroadcast(position, positionValue); 
         return null;
     }
 
-    private void sendUpdateBroadcast(int position) {
+    private void sendUpdateBroadcast(int position, int position_value) {
         Intent intent = new Intent(Constants.ACTION_UPDATE_SLIDER_POSITION);
         intent.putExtra(Constants.EXTRA_SLIDER_POSITION, position);
+        intent.putExtra(Constants.EXTRA_SLIDER_POSITION_VALUE, position_value);
         mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
         intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-        Log.d(TAG, "slider change to positon " + position);
+        Log.d(TAG, "slider change to positon " + position
+                            + " with value " + position_value);
     }
 
     private void doHapticFeedback(int effect) {
@@ -298,5 +322,4 @@ public class KeyHandler implements DeviceKeyHandler {
             }
         }
     }
-
 }
